@@ -1,0 +1,11 @@
+.venv-*/
+donnees/
+entrainement/
+essais/
+__pycache__/
+*.pt
+*.onnx
+*.tflite
+*.vmfb
+*.npy
+modeles/*/npu/
