@@ -1,0 +1,22 @@
+{
+  "taille": 320,
+  "entree": [
+    0.003921568859368563,
+    -128
+  ],
+  "sortie": [
+    0.006071736104786396,
+    -128
+  ],
+  "forme_sortie": [
+    1,
+    5,
+    2100
+  ],
+  "transposee": false,
+  "classes": [
+    "spaghetti"
+  ],
+  "vmfb": "spaghetti.vmfb",
+  "tflite": "spaghetti.tflite"
+}
