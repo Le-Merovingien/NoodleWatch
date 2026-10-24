@@ -1,0 +1,13 @@
+[Unit]
+Description=PrintWatch, detection des spaghettis et pause PrusaLink
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/opt
+ExecStart=/usr/bin/python3 -m printwatch /etc/printwatch.ini
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
