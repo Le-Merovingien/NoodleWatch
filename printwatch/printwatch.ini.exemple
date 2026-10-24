@@ -1,0 +1,27 @@
+[imprimante]
+# adresse de l'imprimante sur le reseau local (ecran : Reglages > Reseau)
+hote = 192.168.1.50
+utilisateur = maker
+# mot de passe PrusaLink (ecran : Reglages > Reseau > PrusaLink)
+mot_de_passe = a-remplir
+# false : mode observation, l'alerte est donnee sans mettre l'impression en pause
+pause = true
+
+[camera]
+# camera de la carte ; fichier video ou dossier d'images pour un essai
+source = /dev/video0
+intervalle = 5
+intervalle_repos = 30
+
+[detection]
+# npu sur la carte ; sim (simulateur du NPU) ou tflite pour un essai sur PC
+materiel = npu
+seuil = 0.5
+# alerte quand n des m dernieres images contiennent un spaghetti
+n = 3
+m = 5
+
+[alerte]
+# commande lancee a l'alerte (buzzer, LED du HAT), vide = aucune
+commande =
+dossier = alertes
