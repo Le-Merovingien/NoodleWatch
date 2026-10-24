@@ -24,4 +24,4 @@ m = 5
 [alerte]
 # commande lancee a l'alerte (buzzer, LED du HAT), vide = aucune
 commande =
-dossier = alertes
+dossier = /var/lib/printwatch/alertes
