@@ -8,10 +8,11 @@ from .prusalink import ErreurImprimante
 log = logging.getLogger("printwatch")
 
 
-def surveille(c, imprimante, source, detecteur, dormir=time.sleep):
+def surveille(c, imprimante, source, detecteur, connect=None, dormir=time.sleep, horloge=time.monotonic):
     """Tourne jusqu'a la fin de la source (dossier ou video d'essai) ; une camera ne finit jamais."""
     filtre = Filtre(c.n, c.m)
-    etat_precedent = None
+    precedent = None
+    derniere_photo = None
     while True:
         try:
             etat, travail = imprimante.etat()
@@ -20,11 +21,14 @@ def surveille(c, imprimante, source, detecteur, dormir=time.sleep):
             filtre.vide()
             dormir(c.intervalle_repos)
             continue
-        if etat != etat_precedent:
+        if etat != precedent:
             log.info("imprimante : %s", etat)
-            etat_precedent = etat
+            if precedent == "PRINTING" and etat == "FINISHED":
+                photo_de_fin(c, source, connect)
+            precedent = etat
         if etat != "PRINTING":
             filtre.vide()
+            derniere_photo = None
             dormir(c.intervalle_repos)
             continue
         image = source.lit()
@@ -35,20 +39,34 @@ def surveille(c, imprimante, source, detecteur, dormir=time.sleep):
             log.warning("image ratee")
             dormir(c.intervalle)
             continue
+        if connect is not None and (derniere_photo is None or horloge() - derniere_photo >= c.intervalle_connect):
+            connect.envoie(image)
+            derniere_photo = horloge()
         detections = detecteur.detecte(image)
         confirme = filtre.ajoute(bool(detections))
-        log.info("spaghetti %s (%s), %d/%d" % (
-            "oui" if detections else "non", ", ".join("%.2f" % d.score for d in detections) or "-",
-            filtre.compte, c.n))
+        log.info("spaghetti %s (%s), %d/%d", "oui" if detections else "non",
+                 ", ".join("%.2f" % d.score for d in detections) or "-", filtre.compte, c.n)
         if confirme:
-            chemin = alerte.enregistre(image, detections, c.dossier)
-            log.warning("ALERTE : spaghetti confirme, image %s", chemin)
+            annotee = alerte.annote(image, detections)
+            log.warning("ALERTE : spaghetti confirme, image %s", alerte.enregistre(annotee, c.dossier, "alerte"))
             if c.pause and travail is not None:
                 try:
                     log.warning("pause du travail %d : %s", travail,
                                 "faite" if imprimante.pause(travail) else "deja arrete")
                 except ErreurImprimante as e:
                     log.error("pause impossible : %s", e)
+            if connect is not None:
+                connect.envoie(annotee)
             alerte.sonne(c.commande)
             filtre.vide()
         dormir(c.intervalle)
+
+
+def photo_de_fin(c, source, connect):
+    """Photo de l'impression terminee : gardee en local et envoyee a Prusa Connect (pour poster le make)."""
+    image = source.lit()
+    if image is None:
+        return
+    log.info("photo de fin : %s", alerte.enregistre(image, c.dossier, "fin"))
+    if connect is not None:
+        connect.envoie(image)

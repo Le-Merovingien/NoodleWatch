@@ -25,3 +25,9 @@ m = 5
 # commande lancee a l'alerte (buzzer, LED du HAT), vide = aucune
 commande =
 dossier = /var/lib/printwatch/alertes
+
+[prusa_connect]
+# option : la boite devient une camera Prusa Connect (photos pendant l'impression, a l'alerte et a la fin).
+# Jeton : Prusa Connect > imprimante > Camera > Ajouter une autre camera. Vide = desactive.
+jeton =
+intervalle_connect = 60

@@ -24,7 +24,12 @@ class Config:
     m: int = 5
     # [alerte]
     commande: str = ""                 # commande shell lancee a l'alerte (buzzer, LED du HAT)
-    dossier: str = "alertes"           # images annotees des alertes
+    dossier: str = "alertes"           # images annotees des alertes et photos de fin d'impression
+    # [prusa_connect] option : photos envoyees a Prusa Connect, desactivee sans jeton
+    jeton: str = ""
+    empreinte: str = ""                # vide : derivee de l'identifiant de la machine
+    url_connect: str = "https://webcam.connect.prusa3d.com/c/snapshot"
+    intervalle_connect: float = 60.0
 
 
 SECTIONS = {
@@ -32,6 +37,7 @@ SECTIONS = {
     "camera": ("source", "intervalle", "intervalle_repos"),
     "detection": ("modele", "materiel", "seuil", "n", "m"),
     "alerte": ("commande", "dossier"),
+    "prusa_connect": ("jeton", "empreinte", "url_connect", "intervalle_connect"),
 }
 
 
