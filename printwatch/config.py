@@ -19,7 +19,7 @@ class Config:
     # [detection]
     modele: str = str(ICI / "modele")  # dossier avec le .vmfb, le .tflite et modele.json
     materiel: str = "npu"              # npu (carte), sim (simulateur x86 du NPU), tflite (PC, rapide)
-    seuil: float = 0.5                 # score minimal d'une detection
+    seuil: float = 0.6                 # score minimal d'une detection
     n: int = 3                         # alerte quand n des m dernieres images contiennent un spaghetti
     m: int = 5
     # [alerte]
