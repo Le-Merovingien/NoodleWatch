@@ -16,7 +16,7 @@ intervalle_repos = 30
 [detection]
 # npu sur la carte ; sim (simulateur du NPU) ou tflite pour un essai sur PC
 materiel = npu
-seuil = 0.6
+seuil = 0.18
 # alerte quand n des m dernieres images contiennent un spaghetti
 n = 3
 m = 5

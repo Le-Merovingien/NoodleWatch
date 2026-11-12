@@ -5,18 +5,19 @@
     -128
   ],
   "sortie": [
-    0.006071736104786396,
+    0.00400869594886899,
     -128
   ],
   "forme_sortie": [
     1,
-    5,
+    6,
     2100
   ],
   "transposee": false,
   "classes": [
-    "spaghetti"
+    "spaghetti",
+    "boule"
   ],
-  "vmfb": "spaghetti.vmfb",
-  "tflite": "spaghetti.tflite"
+  "vmfb": "spaghetti_boule.vmfb",
+  "tflite": "spaghetti_boule.tflite"
 }
