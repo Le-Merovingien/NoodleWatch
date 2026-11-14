@@ -13,6 +13,8 @@ class Detection:
     y1: float
     x2: float
     y2: float
+    classe: int = 0    # indice dans modele.json -> classes
+    nom: str = "spaghetti"
 
 
 def letterbox(image_bgr, taille):
@@ -28,10 +30,11 @@ def letterbox(image_bgr, taille):
 
 
 def decode(sortie, seuil, iou=0.45):
-    """sortie [4 + classes, ancres], boites (cx, cy, w, h) normalisees. Renvoie [(score, cx, cy, w, h)] apres NMS."""
-    boites, conf = sortie[:4].T, sortie[4:].max(0)
+    """sortie [4 + classes, ancres], boites (cx, cy, w, h) normalisees. Renvoie [(score, classe, cx, cy, w, h)] apres
+    NMS (toutes classes confondues : chaque classe declenche l'alerte)."""
+    boites, conf, classe = sortie[:4].T, sortie[4:].max(0), sortie[4:].argmax(0)
     garde = conf >= seuil
-    boites, conf = boites[garde], conf[garde]
+    boites, conf, classe = boites[garde], conf[garde], classe[garde]
     x1, y1 = boites[:, 0] - boites[:, 2] / 2, boites[:, 1] - boites[:, 3] / 2
     x2, y2 = boites[:, 0] + boites[:, 2] / 2, boites[:, 1] + boites[:, 3] / 2
     aire = boites[:, 2] * boites[:, 3]
@@ -39,7 +42,7 @@ def decode(sortie, seuil, iou=0.45):
     res = []
     while len(ordre):
         i, reste = ordre[0], ordre[1:]
-        res.append((float(conf[i]), *map(float, boites[i])))
+        res.append((float(conf[i]), int(classe[i]), *map(float, boites[i])))
         inter = (np.clip(np.minimum(x2[i], x2[reste]) - np.maximum(x1[i], x1[reste]), 0, None) *
                  np.clip(np.minimum(y2[i], y2[reste]) - np.maximum(y1[i], y1[reste]), 0, None))
         ordre = reste[inter / np.maximum(aire[i] + aire[reste] - inter, 1e-9) <= iou]
@@ -86,8 +89,10 @@ class Detecteur:
         if self.meta["transposee"]:                     # onnx2tf peut sortir [1, ancres, canaux]
             sortie = sortie.transpose(0, 2, 1)
         res = []
-        for score, cx, cy, w, h in decode(sortie[0], self.seuil):
+        noms = self.meta["classes"]
+        for score, classe, cx, cy, w, h in decode(sortie[0], self.seuil):
             px = lambda u, decal: (u * self.taille - decal) / echelle   # noqa: E731
             res.append(Detection(score, px(cx - w / 2, gauche), px(cy - h / 2, haut),
-                                 px(cx + w / 2, gauche), px(cy + h / 2, haut)))
+                                 px(cx + w / 2, gauche), px(cy + h / 2, haut),
+                                 classe, noms[classe] if classe < len(noms) else str(classe)))
         return res
