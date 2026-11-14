@@ -45,7 +45,7 @@ def surveille(c, imprimante, source, detecteur, connect=None, dormir=time.sleep,
         detections = detecteur.detecte(image)
         confirme = filtre.ajoute(bool(detections))
         log.info("spaghetti %s (%s), %d/%d", "oui" if detections else "non",
-                 ", ".join("%.2f" % d.score for d in detections) or "-", filtre.compte, c.n)
+                 ", ".join("%s %.2f" % (d.nom, d.score) for d in detections) or "-", filtre.compte, c.n)
         if confirme:
             annotee = alerte.annote(image, detections)
             log.warning("ALERTE : spaghetti confirme, image %s", alerte.enregistre(annotee, c.dossier, "alerte"))

@@ -12,7 +12,7 @@ def annote(image, detections):
     annotee = image.copy()
     for det in detections:
         cv2.rectangle(annotee, (int(det.x1), int(det.y1)), (int(det.x2), int(det.y2)), (0, 110, 250), 2)
-        cv2.putText(annotee, "spaghetti %.2f" % det.score, (int(det.x1), max(int(det.y1) - 6, 12)),
+        cv2.putText(annotee, "%s %.2f" % (det.nom, det.score), (int(det.x1), max(int(det.y1) - 6, 12)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 110, 250), 1)
     return annotee
 
