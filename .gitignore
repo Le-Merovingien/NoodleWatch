@@ -11,3 +11,5 @@ __pycache__/
 *.log
 modeles/*/npu/
 .idea/
+!printwatch/modele/*.tflite
+!printwatch/modele/*.vmfb
