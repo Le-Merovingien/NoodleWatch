@@ -30,6 +30,9 @@ class Config:
     empreinte: str = ""                # vide : derivee de l'identifiant de la machine
     url_connect: str = "https://webcam.connect.prusa3d.com/c/snapshot"
     intervalle_connect: float = 60.0
+    # [journal]
+    fichier: str = ""                  # journal tourne chaque nuit ; vide : sortie standard (journal systemd) seulement
+    jours: int = 14                    # journaux tournes et images d'alerte ou de fin plus vieux : supprimes (0 : jamais)
 
 
 SECTIONS = {
@@ -38,6 +41,7 @@ SECTIONS = {
     "detection": ("modele", "materiel", "seuil", "n", "m"),
     "alerte": ("commande", "dossier"),
     "prusa_connect": ("jeton", "empreinte", "url_connect", "intervalle_connect"),
+    "journal": ("fichier", "jours"),
 }
 
 
@@ -61,9 +65,9 @@ def lit(chemin):
                 val = p.get(section, cle)
             setattr(c, cle, val)
     base = Path(chemin).resolve().parent             # chemins relatifs au fichier de configuration
-    for cle in ("modele", "dossier"):
+    for cle in ("modele", "dossier", "fichier"):
         v = Path(getattr(c, cle))
-        if not v.is_absolute():
+        if getattr(c, cle) and not v.is_absolute():
             setattr(c, cle, str(base / v))
     if not c.hote:
         raise ValueError("[imprimante] hote manquant")
@@ -71,4 +75,6 @@ def lit(chemin):
         raise ValueError("[detection] materiel : npu, sim ou tflite")
     if not 1 <= c.n <= c.m:
         raise ValueError("[detection] il faut 1 <= n <= m")
+    if c.jours < 0:
+        raise ValueError("[journal] jours : 0 ou plus")
     return c

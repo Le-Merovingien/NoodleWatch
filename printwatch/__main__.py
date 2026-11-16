@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from . import config
+from . import config, menage
 from .detecteur import Detecteur
 from .prusaconnect import PrusaConnect
 from .prusalink import PrusaLink
@@ -15,9 +15,14 @@ def main():
     p.add_argument("--verbeux", action="store_true")
     a = p.parse_args()
     logging.basicConfig(level=logging.DEBUG if a.verbeux else logging.INFO,
-                        format="%(asctime)s %(levelname)s %(message)s")
+                        format=menage.FORMAT)
     c = config.lit(a.config)
     log = logging.getLogger("printwatch")
+    if c.fichier:
+        try:
+            menage.journal(c.fichier, c.jours)
+        except OSError as e:                         # pas de fichier : la surveillance continue sur la sortie standard
+            log.warning("journal %s impossible : %s", c.fichier, e)
     detecteur = Detecteur(c.modele, c.materiel, c.seuil)
     log.info("modele %s sur %s, seuil %.2f, alerte a %d sur %d, pause %s", c.modele, c.materiel, c.seuil, c.n, c.m,
              "oui" if c.pause else "non (observation)")

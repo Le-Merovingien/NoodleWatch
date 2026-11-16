@@ -32,3 +32,10 @@ dossier = /var/lib/printwatch/alertes
 # Token: Prusa Connect > printer > Camera > Add another camera. Empty = disabled.
 jeton =
 intervalle_connect = 60
+
+[journal]
+# log file, rotated every night at midnight; empty = systemd journal only
+fichier = /var/lib/printwatch/printwatch.log
+# after this many days, rotated logs and alert or end-of-print images are deleted (0 = never);
+# images are only deleted when no print is running
+jours = 14

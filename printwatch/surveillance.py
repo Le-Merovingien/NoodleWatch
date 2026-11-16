@@ -1,7 +1,7 @@
 import logging
 import time
 
-from . import alerte
+from . import alerte, menage
 from .filtre import Filtre
 from .prusalink import ErreurImprimante
 
@@ -13,6 +13,7 @@ def surveille(c, imprimante, source, detecteur, connect=None, dormir=time.sleep,
     filtre = Filtre(c.n, c.m)
     precedent = None
     derniere_photo = None
+    dernier_menage = None
     while True:
         try:
             etat, travail = imprimante.etat()
@@ -29,6 +30,12 @@ def surveille(c, imprimante, source, detecteur, connect=None, dormir=time.sleep,
         if etat != "PRINTING":
             filtre.vide()
             derniere_photo = None
+            if dernier_menage is None or horloge() - dernier_menage >= 3600:
+                dernier_menage = horloge()
+                try:
+                    menage.purge(c.dossier, c.jours)
+                except Exception as e:                  # le menage ne doit jamais arreter la surveillance
+                    log.warning("menage impossible : %s", e)
             dormir(c.intervalle_repos)
             continue
         image = source.lit()
