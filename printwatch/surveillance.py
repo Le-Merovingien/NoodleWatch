@@ -59,14 +59,18 @@ def surveille(c, imprimante, source, detecteur, connect=None, dormir=time.sleep,
         log.info("spaghetti %s (%s), %d/%d", "oui" if detections else "non",
                  ", ".join("%s %.2f" % (d.nom, d.score) for d in detections) or "-", filtre.compte, c.n)
         if confirme:
-            annotee = alerte.annote(image, detections)
-            log.warning("ALERTE : spaghetti confirme, image %s", alerte.enregistre(annotee, c.dossier, "alerte"))
-            if c.pause and travail is not None:
+            log.warning("ALERTE : spaghetti confirme")
+            if c.pause and travail is not None:                 # la pause avant tout : rien ne doit la retarder
                 try:
                     log.warning("pause du travail %d : %s", travail,
                                 "faite" if imprimante.pause(travail) else "deja arrete")
                 except ErreurImprimante as e:
                     log.error("pause impossible : %s", e)
+            annotee = alerte.annote(image, detections)
+            try:
+                log.warning("image d'alerte : %s", alerte.enregistre(annotee, c.dossier, "alerte"))
+            except Exception as e:                              # dossier interdit ou disque plein : on continue
+                log.warning("image d'alerte non enregistree : %s", e)
             if connect is not None:
                 connect.envoie(annotee)
             alerte.sonne(c.commande)
@@ -79,6 +83,9 @@ def photo_de_fin(c, source, connect):
     image = source.lit()
     if image is None:
         return
-    log.info("photo de fin : %s", alerte.enregistre(image, c.dossier, "fin"))
+    try:
+        log.info("photo de fin : %s", alerte.enregistre(image, c.dossier, "fin"))
+    except Exception as e:
+        log.warning("photo de fin non enregistree : %s", e)
     if connect is not None:
         connect.envoie(image)
