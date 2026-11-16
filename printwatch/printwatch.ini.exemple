@@ -1,33 +1,33 @@
 [imprimante]
-# adresse de l'imprimante sur le reseau local (ecran : Reglages > Reseau)
+# printer address on the local network (printer screen: Settings > Network)
 hote = 192.168.1.50
 utilisateur = maker
-# mot de passe PrusaLink (ecran : Reglages > Reseau > PrusaLink)
+# PrusaLink password (printer screen: Settings > Network > PrusaLink)
 mot_de_passe = a-remplir
-# false : mode observation, l'alerte est donnee sans mettre l'impression en pause
+# false: observation mode, the alert is raised without pausing the print
 pause = true
 
 [camera]
-# camera de la carte ; fichier video ou dossier d'images pour un essai
+# board camera; a video file or an image folder for a test
 source = /dev/video0
 intervalle = 5
 intervalle_repos = 30
 
 [detection]
-# npu sur la carte ; sim (simulateur du NPU) ou tflite pour un essai sur PC
+# npu on the board; sim (NPU simulator) or tflite for a test on a PC
 materiel = npu
 seuil = 0.18
-# alerte quand n des m dernieres images contiennent un spaghetti
+# alert when n of the last m images contain spaghetti
 n = 3
 m = 5
 
 [alerte]
-# commande lancee a l'alerte (buzzer, LED du HAT), vide = aucune
+# command run on alert (buzzer, HAT LEDs), empty = none
 commande =
 dossier = /var/lib/printwatch/alertes
 
 [prusa_connect]
-# option : la boite devient une camera Prusa Connect (photos pendant l'impression, a l'alerte et a la fin).
-# Jeton : Prusa Connect > imprimante > Camera > Ajouter une autre camera. Vide = desactive.
+# option: the box becomes a Prusa Connect camera (photos during the print, on alert and at the end).
+# Token: Prusa Connect > printer > Camera > Add another camera. Empty = disabled.
 jeton =
 intervalle_connect = 60
