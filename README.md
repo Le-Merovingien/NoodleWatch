@@ -30,12 +30,23 @@ Optionally, the box also works as a Prusa Connect camera: one photo per minute d
 
 For a first try, set `pause = false` (observation mode): alerts are saved without stopping the print.
 
+## Prusa Buddy3D camera
+
+NoodleWatch can also use the Buddy3D camera inside the CORE One instead of the box camera:
+1. In the Prusa app, enable RTSP for the camera. The stream is then available on the local network only, unencrypted.
+2. In `printwatch.ini`, set `source = rtsp://<camera IP>/live`.
+
+The stream is read continuously in the background, so each analysis uses the latest image, and NoodleWatch reconnects on its own if the stream drops. With the Buddy3D, nothing needs to be mounted on the door: the program can run on the board anywhere on the network, or on a Linux PC with `materiel = tflite` (Python packages `numpy`, `opencv-python` and `ai-edge-litert`), with `python -m printwatch printwatch.ini`.
+
+Not yet tested with a real Buddy3D camera.
+
 ## To check on the board
 
 These points could not be checked without the hardware:
 - **Camera:** the OV5647 should show up as `/dev/video0`. If not, put a GStreamer pipeline in `source`.
 - **Python packages:** `numpy`, `opencv` and `torq-runtime` must be present on the board's image, as in the Synaptics demos.
 - **Alert:** the command that drives the HAT's buzzer and LEDs is still to be written, because their pins are not documented.
+- **Buddy3D:** decoding the HD stream continuously uses some CPU on the board; not measured yet.
 
 ## Model
 
