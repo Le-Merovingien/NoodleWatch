@@ -26,6 +26,11 @@ def surveille(c, imprimante, source, detecteur, connect=None, dormir=time.sleep,
             log.info("imprimante : %s", etat)
             if precedent == "PRINTING" and etat == "FINISHED":
                 photo_de_fin(c, source, connect)
+            if etat == "PRINTING" and precedent is not None and hasattr(source, "regle"):
+                try:
+                    source.regle()
+                except Exception as e:                      # un reglage rate ne doit pas arreter la surveillance
+                    log.warning("reglage du capteur impossible : %s", e)
             precedent = etat
         if etat != "PRINTING":
             filtre.vide()

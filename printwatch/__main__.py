@@ -30,6 +30,7 @@ def main():
     if connect is not None:
         log.info("Prusa Connect : une photo toutes les %d s, empreinte %s", c.intervalle_connect, connect.empreinte)
     source = Source(c.source)
+    source.regle()                                   # exposition du capteur CSI de la boite
     try:
         surveille(c, PrusaLink(c.hote, c.utilisateur, c.mot_de_passe), source, detecteur, connect)
     except KeyboardInterrupt:

@@ -13,7 +13,9 @@ class Config:
     mot_de_passe: str = ""
     pause: bool = True                 # False : mode observation, alerte sans mettre en pause
     # [camera]
-    source: str = "/dev/video0"        # peripherique V4L2, pipeline GStreamer (avec "!"), fichier video ou dossier
+    # pipeline GStreamer de Synaptics pour la camera de la carte ; aussi : flux rtsp://, peripherique V4L2, video, dossier
+    source: str = ("v4l2src device=/dev/video0 ! video/x-raw ! videoconvert ! video/x-raw,format=BGR ! "
+                   "appsink drop=true max-buffers=1")
     intervalle: float = 5.0            # secondes entre deux images pendant une impression
     intervalle_repos: float = 30.0     # secondes entre deux lectures d'etat hors impression
     # [detection]

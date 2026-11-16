@@ -52,7 +52,7 @@ Not yet tested with a real Buddy3D camera.
 ## To check on the board
 
 These points could not be checked without the hardware:
-- **Camera:** the OV5647 should show up as `/dev/video0`. If not, put a GStreamer pipeline in `source`.
+- **Camera:** `source` uses the GStreamer pipeline of Synaptics' examples on `/dev/video0` (OpenCV's own V4L2 access can block forever on this board). If the OV5647 is on another node, find it with `v4l2-ctl --list-devices`. Its exposure is set at start-up and at each print start, as in Synaptics' examples, because the sensor's auto exposure leaves frames black.
 - **Board image:** Synaptics tested its SL2610 examples with Torq 2.3 on the scarthgap 6.12 v2.5.0 (Coralboard I/O Edition) and v2.6.1 images. The model is compiled with Torq 2.3.0.
 - **Alert:** the command that drives the HAT's buzzer and LEDs is still to be written, because their pins are not documented.
 - **Buddy3D:** decoding the HD stream continuously uses some CPU on the board; not measured yet.

@@ -1,11 +1,14 @@
 import logging
 import os
 import re
+import subprocess
 import threading
 import time
 from pathlib import Path
 
 import cv2
+
+from . import capteur
 
 log = logging.getLogger("printwatch")
 
@@ -47,6 +50,18 @@ class Source:
             ok, image = self._cap.read()
             self.fini = not ok
         return image if ok else None
+
+    def regle(self, commande=subprocess.run, chemins=None, dormir=time.sleep):
+        """Regle l'exposition d'un capteur CSI lu par un pipeline v4l2src (voir capteur.py) ; sans effet sinon."""
+        if self._flux is None or "v4l2src" not in self._flux.url:
+            return None
+        sous_dev = capteur.sous_peripherique(commande, chemins)
+        if sous_dev is None:
+            return None
+        fin = time.monotonic() + 10                     # premiere image de la camera
+        while self._flux.lit() is None and time.monotonic() < fin:
+            dormir(0.1)
+        return capteur.regle(self._flux.lit, sous_dev, commande, dormir)
 
     def ferme(self):
         if self._flux is not None:
