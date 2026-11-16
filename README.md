@@ -18,11 +18,16 @@ Optionally, the box also works as a Prusa Connect camera: one photo per minute d
    ```bash
    adb push printwatch /opt/printwatch
    ```
-3. **Configuration:** the file must be edited before it goes on the board. On the PC, copy `printwatch/printwatch.ini.exemple` to `printwatch.ini` and fill in the printer's address (`hote`) and the PrusaLink password (`mot_de_passe`), shown on the printer's screen: Settings > Network > PrusaLink. Then copy it to the board:
+3. **Python packages:** the Torq runtime that drives the NPU is not on the board's image. Create a virtual environment that keeps the image's own packages (its OpenCV is built with GStreamer, which the camera needs), then install the requirements. The board must be on the network:
+   ```bash
+   adb shell python3 -m venv /opt/printwatch-venv --system-site-packages
+   adb shell /opt/printwatch-venv/bin/pip install -r /opt/printwatch/requirements.txt
+   ```
+4. **Configuration:** the file must be edited before it goes on the board. On the PC, copy `printwatch/printwatch.ini.exemple` to `printwatch.ini` and fill in the printer's address (`hote`) and the PrusaLink password (`mot_de_passe`), shown on the printer's screen: Settings > Network > PrusaLink. Then copy it to the board:
    ```bash
    adb push printwatch.ini /etc/printwatch.ini
    ```
-4. **Automatic start:**
+5. **Automatic start:**
    ```bash
    adb push printwatch/printwatch.service /etc/systemd/system/
    adb shell systemctl enable --now printwatch
@@ -44,7 +49,7 @@ Not yet tested with a real Buddy3D camera.
 
 These points could not be checked without the hardware:
 - **Camera:** the OV5647 should show up as `/dev/video0`. If not, put a GStreamer pipeline in `source`.
-- **Python packages:** `numpy`, `opencv` and `torq-runtime` must be present on the board's image, as in the Synaptics demos.
+- **Board image:** Synaptics tested its SL2610 examples with Torq 2.3 on the scarthgap 6.12 v2.5.0 (Coralboard I/O Edition) and v2.6.1 images. The model is compiled with Torq 2.3.0.
 - **Alert:** the command that drives the HAT's buzzer and LEDs is still to be written, because their pins are not documented.
 - **Buddy3D:** decoding the HD stream continuously uses some CPU on the board; not measured yet.
 

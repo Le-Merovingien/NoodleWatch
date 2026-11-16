@@ -1,1 +1,2 @@
-numpy
+torq-runtime~=2.3.0
+numpy>2.0.0b1
