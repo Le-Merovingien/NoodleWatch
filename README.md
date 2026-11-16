@@ -17,7 +17,7 @@ NoodleWatch has not run on a real Coralboard yet, and the box has not been print
 
 ## Installation on the board
 
-1. **Network:** fit the M.2 Wi-Fi module (Ampak AP12611_M2, not included) and connect the board to the printer's network.
+1. **Network:** the board must reach the printer on your network. For everyday use, fit the M.2 Wi-Fi module (Ampak AP12611_M2, not included) and join the printer's network: see [Attach the Wi-Fi/Bluetooth module](https://developer.synaptics.com/docs/developer-kits/coralboard/sl/user-guide#attach-wifibluetooth-module-optional) in the Coralboard user guide. For the installation alone, network sharing over USB from the PC is enough: see [Connect to a network over USB](https://developer.synaptics.com/docs/developer-kits/coralboard/sl/user-guide#connect-to-a-network-over-usb).
 2. **Copy:** connect the board to the PC over USB-C, then copy the folder. Everything goes in `/home/root`: the root partition is small and could fill up.
    ```bash
    adb push printwatch /home/root/printwatch
@@ -30,7 +30,9 @@ NoodleWatch has not run on a real Coralboard yet, and the box has not been print
 4. **Configuration:** the file must be edited before it goes on the board. On the PC, copy `printwatch/printwatch.ini.exemple` to `printwatch.ini` and fill in the printer's address (`hote`) and the PrusaLink password (`mot_de_passe`), shown on the printer's screen: Settings > Network > PrusaLink. Then copy it to the board:
    ```bash
    adb push printwatch.ini /etc/printwatch.ini
+   adb shell chmod 600 /etc/printwatch.ini
    ```
+   The file holds the PrusaLink password: `chmod 600` makes it readable by root only.
 5. **Automatic start:**
    ```bash
    adb push printwatch/printwatch.service /etc/systemd/system/
@@ -56,6 +58,10 @@ These points could not be checked without the hardware:
 - **Board image:** Synaptics tested its SL2610 examples with Torq 2.3 on the scarthgap 6.12 v2.5.0 (Coralboard I/O Edition) and v2.6.1 images. The model is compiled with Torq 2.3.0.
 - **Alert:** the command that drives the HAT's buzzer and LEDs is still to be written, because their pins are not documented.
 - **Buddy3D:** decoding the HD stream continuously uses some CPU on the board; not measured yet.
+- **Heat:** the board sits in a closed box, against door glass warmed by the chamber (long ASA or ABS prints).
+- **Focus:** the OV5647 module is fixed-focus, normally sharp from about 1 m to infinity, while the nozzle is closer.
+- **Reflections:** the door glass can reflect the LEDs of the board and the HAT, or the printer's lighting, into the lens.
+- **NPU inputs and outputs:** the program passes NumPy arrays to `torq.runtime.VMFBInferenceRunner` (`printwatch/detecteur.py`), whereas Synaptics' examples use device-backed I/O (`device_io=True`, needed by the default dmabuf allocator according to their comment). If inference fails on the board, look here first.
 
 ## Model
 
