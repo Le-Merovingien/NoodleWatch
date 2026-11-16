@@ -20,7 +20,7 @@ NoodleWatch has not run on a real Coralboard yet, and the box has not been print
 1. **Network:** the board must reach the printer on your network. For everyday use, fit the M.2 Wi-Fi module (Ampak AP12611_M2, not included) and join the printer's network: see [Attach the Wi-Fi/Bluetooth module](https://developer.synaptics.com/docs/developer-kits/coralboard/sl/user-guide#attach-wifibluetooth-module-optional) in the Coralboard user guide. For the installation alone, network sharing over USB from the PC is enough: see [Connect to a network over USB](https://developer.synaptics.com/docs/developer-kits/coralboard/sl/user-guide#connect-to-a-network-over-usb).
 2. **Copy:** connect the board to the PC over USB-C, then copy the folder. Everything goes in `/home/root`: the root partition is small and could fill up.
    ```bash
-   adb push printwatch /home/root/printwatch
+   adb push printwatch /home/root/
    ```
 3. **Python packages:** the Torq runtime that drives the NPU is not on the board's image. Create a virtual environment that keeps the image's own packages (its OpenCV is built with GStreamer, which the camera needs), then install the requirements. The board must be on the network:
    ```bash
@@ -47,7 +47,7 @@ NoodleWatch can also use the Buddy3D camera inside the CORE One instead of the b
 1. In the Prusa app, enable RTSP for the camera. The stream is then available on the local network only, unencrypted.
 2. In `printwatch.ini`, set `source = rtsp://<camera IP>/live`.
 
-The stream is read continuously in the background, so each analysis uses the latest image, and NoodleWatch reconnects on its own if the stream drops. With the Buddy3D, nothing needs to be mounted on the door: the program can run on the board anywhere on the network, or on a Linux PC with `materiel = tflite` (Python packages `numpy`, `opencv-python` and `ai-edge-litert`), with `python -m printwatch printwatch.ini`.
+The stream is read continuously in the background, so each analysis uses the latest image, and NoodleWatch reconnects on its own if the stream drops. With the Buddy3D, nothing needs to be mounted on the door: the program can run on the board anywhere on the network, or on a Linux PC with `materiel = tflite` (Python packages `numpy`, `opencv-python` and `ai-edge-litert`), with `python -m printwatch printwatch.ini`. On a PC, also point `dossier` (`[alerte]`) and `fichier` (`[journal]`) to places you can write to: the example paths are the board's.
 
 Not yet tested with a real Buddy3D camera.
 
