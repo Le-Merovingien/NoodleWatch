@@ -18,14 +18,14 @@ NoodleWatch has not run on a real Coralboard yet, and the box has not been print
 ## Installation on the board
 
 1. **Network:** fit the M.2 Wi-Fi module (Ampak AP12611_M2, not included) and connect the board to the printer's network.
-2. **Copy:** connect the board to the PC over USB-C, then copy the folder:
+2. **Copy:** connect the board to the PC over USB-C, then copy the folder. Everything goes in `/home/root`: the root partition is small and could fill up.
    ```bash
-   adb push printwatch /opt/printwatch
+   adb push printwatch /home/root/printwatch
    ```
 3. **Python packages:** the Torq runtime that drives the NPU is not on the board's image. Create a virtual environment that keeps the image's own packages (its OpenCV is built with GStreamer, which the camera needs), then install the requirements. The board must be on the network:
    ```bash
-   adb shell python3 -m venv /opt/printwatch-venv --system-site-packages
-   adb shell /opt/printwatch-venv/bin/pip install -r /opt/printwatch/requirements.txt
+   adb shell python3 -m venv /home/root/printwatch-venv --system-site-packages
+   adb shell /home/root/printwatch-venv/bin/pip install -r /home/root/printwatch/requirements.txt
    ```
 4. **Configuration:** the file must be edited before it goes on the board. On the PC, copy `printwatch/printwatch.ini.exemple` to `printwatch.ini` and fill in the printer's address (`hote`) and the PrusaLink password (`mot_de_passe`), shown on the printer's screen: Settings > Network > PrusaLink. Then copy it to the board:
    ```bash

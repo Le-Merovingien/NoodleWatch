@@ -4,8 +4,8 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-WorkingDirectory=/opt
-ExecStart=/opt/printwatch-venv/bin/python -m printwatch /etc/printwatch.ini
+WorkingDirectory=/home/root
+ExecStart=/home/root/printwatch-venv/bin/python -m printwatch /etc/printwatch.ini
 Restart=always
 RestartSec=10
 

@@ -28,7 +28,7 @@ m = 5
 [alerte]
 # command run on alert (buzzer, HAT LEDs), empty = none
 commande =
-dossier = /var/lib/printwatch/alertes
+dossier = /home/root/printwatch-data/alertes
 
 [prusa_connect]
 # option: the box becomes a Prusa Connect camera (photos during the print, on alert and at the end).
@@ -38,7 +38,7 @@ intervalle_connect = 60
 
 [journal]
 # log file, rotated every night at midnight; empty = systemd journal only
-fichier = /var/lib/printwatch/printwatch.log
+fichier = /home/root/printwatch-data/printwatch.log
 # after this many days, rotated logs and alert or end-of-print images are deleted (0 = never);
 # images are only deleted when no print is running
 jours = 14
