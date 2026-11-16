@@ -11,6 +11,10 @@ NoodleWatch watches the print bed through the Coralboard camera. During a print,
 
 Optionally, the box also works as a Prusa Connect camera: one photo per minute during the print, the alert image, and a final photo to post the make.
 
+## Status
+
+NoodleWatch has not run on a real Coralboard yet, and the box has not been printed yet. Everything was checked on a PC: installed with `requirements.txt`, the whole program runs with Synaptics' NPU simulator (monitoring loop, detection, pause through PrusaLink on a fake printer) and uses about 110 MB of memory, well within the board's 2 GB. What is left to check on the hardware is listed under "To check on the board".
+
 ## Installation on the board
 
 1. **Network:** fit the M.2 Wi-Fi module (Ampak AP12611_M2, not included) and connect the board to the printer's network.
