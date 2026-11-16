@@ -17,13 +17,15 @@ class Source:
         self._images = None
         self._cap = None
         self._flux = None
-        if "://" in source:
+        if "!" in source:                           # pipeline GStreamer, meme avec rtspsrc location=rtsp://...
+            self._flux = Flux(source, ouvre, api=cv2.CAP_GSTREAMER)
+        elif "://" in source:                       # flux reseau : FFmpeg ou GStreamer, selon l'OpenCV installe
             self._flux = Flux(source, ouvre)
         elif p.is_dir():
             self._images = sorted(x for x in p.iterdir() if x.suffix.lower() in (".jpg", ".jpeg", ".png"))
             self._camera = False
         else:
-            self._cap = ouvre(source, cv2.CAP_GSTREAMER if "!" in source else cv2.CAP_ANY)
+            self._cap = ouvre(source, cv2.CAP_ANY)
             if not self._cap.isOpened():
                 raise RuntimeError("impossible d'ouvrir la source d'images %s" % source)
             self._camera = not p.is_file()
@@ -54,13 +56,16 @@ class Source:
 
 
 class Flux:
-    """Flux reseau lu en continu dans un thread ; lit() rend l'image la plus recente. Entre deux analyses (5 s), un
-    flux RTSP s'accumule dans les tampons du reseau et du decodeur : lu seulement au moment de l'analyse, il donnerait
-    une image vieille de plusieurs secondes. Reconnexion automatique si le flux coupe (camera redemarree, Wi-Fi)."""
+    """Flux (reseau ou pipeline GStreamer) lu en continu dans un thread ; lit() rend l'image la plus recente, sans
+    jamais bloquer. Entre deux analyses (5 s), un flux RTSP s'accumule dans les tampons du reseau et du decodeur : lu
+    seulement au moment de l'analyse, il donnerait une image vieille de plusieurs secondes. Une camera qui ne livre
+    plus rien donne None apres age_max secondes, au lieu de bloquer la surveillance. Reconnexion automatique si le
+    flux coupe (camera redemarree, Wi-Fi). api : backend OpenCV (CAP_ANY : celui qui sait ouvrir l'URL)."""
 
-    def __init__(self, url, ouvre=cv2.VideoCapture, age_max=10.0, attente=5.0):
+    def __init__(self, url, ouvre=cv2.VideoCapture, api=cv2.CAP_ANY, age_max=10.0, attente=5.0):
         os.environ.setdefault("OPENCV_FFMPEG_CAPTURE_OPTIONS", "rtsp_transport;tcp")    # TCP : pas d'image dechiree
         self.url = url
+        self.api = api
         self.nom = re.sub(r"//[^/@]*@", "//", url)          # sans identifiants eventuels, pour le journal
         self.age_max = age_max                              # au-dela, l'image est perimee : lit() rend None
         self.attente = attente                              # pause avant de se reconnecter
@@ -74,7 +79,7 @@ class Flux:
 
     def _boucle(self):
         while not self._arret.is_set():
-            cap = self._ouvre(self.url, cv2.CAP_FFMPEG)
+            cap = self._ouvre(self.url, self.api)
             if cap.isOpened():
                 log.info("flux %s ouvert", self.nom)
                 while not self._arret.is_set():
