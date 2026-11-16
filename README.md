@@ -18,7 +18,10 @@ Optionally, the box also works as a Prusa Connect camera: one photo per minute d
    ```bash
    adb push printwatch /opt/printwatch
    ```
-3. **Configuration:** copy `printwatch/printwatch.ini.exemple` to `/etc/printwatch.ini`. Fill in the printer's address and the PrusaLink password, shown on the printer's screen: Settings > Network > PrusaLink.
+3. **Configuration:** the file must be edited before it goes on the board. On the PC, copy `printwatch/printwatch.ini.exemple` to `printwatch.ini` and fill in the printer's address (`hote`) and the PrusaLink password (`mot_de_passe`), shown on the printer's screen: Settings > Network > PrusaLink. Then copy it to the board:
+   ```bash
+   adb push printwatch.ini /etc/printwatch.ini
+   ```
 4. **Automatic start:**
    ```bash
    adb push printwatch/printwatch.service /etc/systemd/system/
