@@ -8,7 +8,8 @@ mot_de_passe = a-remplir
 pause = true
 
 [camera]
-# board camera; Buddy3D camera: rtsp://camera-IP/live (RTSP enabled in the Prusa app);
+# board camera; Buddy3D camera: rtsp://camera-IP/live (RTSP enabled in the Prusa app),
+# 720p recommended (1080p takes most of the board's CPU to decode);
 # a video file or an image folder for a test
 source = /dev/video0
 intervalle = 5
