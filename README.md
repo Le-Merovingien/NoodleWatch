@@ -1,5 +1,13 @@
 # NoodleWatch
 
+[![Status: beta](https://img.shields.io/badge/status-beta-orange)](#status)
+[![Version: 0.1.0-beta](https://img.shields.io/badge/version-0.1.0--beta-blue)](https://github.com/Le-Merovingien/NoodleWatch/tree/v0.1.0-beta)
+[![Model: v2, YOLOv8n int8, spaghetti + blob](https://img.shields.io/badge/model-v2%20%C2%B7%20YOLOv8n%20int8%20%C2%B7%20spaghetti%20%2B%20blob-blueviolet)](#model)
+[![Tested: NPU simulator only](https://img.shields.io/badge/tested-NPU%20simulator%20only-yellow)](#status)
+[![Board: Coralboard SL, Torq NPU](https://img.shields.io/badge/board-Coralboard%20SL%20%C2%B7%20Torq%20NPU-informational)](https://developer.synaptics.com/docs/developer-kits/coralboard/sl/user-guide)
+[![Printer: Prusa CORE One](https://img.shields.io/badge/printer-Prusa%20CORE%20One-FA6831)](https://www.printables.com/model/1887405-noodlewatch-spaghetti-detection-for-prusa-core-one)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
+
 Project page and printable box: [NoodleWatch on Printables](https://www.printables.com/model/1887405-noodlewatch-spaghetti-detection-for-prusa-core-one).
 
 The code and its commands still use the project's working name, `printwatch`.
@@ -10,6 +18,16 @@ NoodleWatch watches the print bed through the Coralboard camera. During a print,
 - runs the alert command (buzzer and LEDs of the HAT).
 
 Optionally, the box also works as a Prusa Connect camera: one photo per minute during the print, the alert image, and a final photo to post the make.
+
+## Example detections
+
+<p>
+  <img src="docs/example_spaghetti_1.jpg" width="32%" alt="Spaghetti detected, score 0.74">
+  <img src="docs/example_spaghetti_2.jpg" width="32%" alt="Spaghetti detected, score 0.77">
+  <img src="docs/example_blob.jpg" width="32%" alt="Blob of death detected, score 0.72">
+</p>
+
+Frames from the test set of the "Defect Detection in 3D Printing" dataset (Roboflow, CC BY 4.0, see [CREDITS.md](CREDITS.md)), not used for training, as annotated by NoodleWatch with the NPU simulator at the 0.18 threshold (`boule` is the blob class).
 
 ## Status
 

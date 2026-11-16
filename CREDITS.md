@@ -11,6 +11,10 @@ The model in NoodleWatch is trained on these two datasets from Roboflow Universe
 
 Changes made: only the spaghetti labels ("spaghetti" in the first dataset, "Spaghetti" in the second) and the "Blob of Death" labels of the second dataset are kept, as the classes `spaghetti` and `boule`; the other labels are dropped and their images are used as images without a defect to detect. Images are grouped by original photo, so that copies of a photo (rotated, flipped…) never end up in both the training and the test sets.
 
+## Images in the README
+
+The three example images in `docs/` are frames from the test set of **Defect Detection in 3D Printing** (above), not used for training. Changes made: boxes, class names and scores drawn by NoodleWatch.
+
 ## Also used during development
 
 These datasets, also under CC BY 4.0, were used in experiments but are not part of the released model:
