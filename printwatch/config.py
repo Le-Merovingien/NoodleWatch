@@ -7,7 +7,9 @@ ICI = Path(__file__).resolve().parent
 
 @dataclass
 class Config:
-    # [imprimante] PrusaLink : utilisateur "maker", mot de passe affiche dans les reglages reseau de l'imprimante
+    # [imprimante] api : prusalink (l'imprimante directement) ou connect (serveur Prusa Connect local, [connect_local])
+    api: str = "prusalink"
+    # PrusaLink : utilisateur "maker", mot de passe affiche dans les reglages reseau de l'imprimante
     hote: str = ""
     utilisateur: str = "maker"
     mot_de_passe: str = ""
@@ -32,17 +34,24 @@ class Config:
     empreinte: str = ""                # vide : derivee de l'identifiant de la machine
     url_connect: str = "https://webcam.connect.prusa3d.com/c/snapshot"
     intervalle_connect: float = 60.0
+    # [connect_local] serveur Prusa Connect local (cles url, jeton, imprimante, camera dans le fichier INI)
+    url_local: str = ""                # adresse du serveur, ex. http://192.168.1.10:8080
+    jeton_local: str = ""              # jeton d'API, portee operate
+    imprimante_local: str = ""         # id de l'imprimante sur le serveur ; vide : la seule connue du serveur
+    camera_local: str = ""             # nom d'une camera de type push sur le serveur ; vide : pas de photos
     # [journal]
     fichier: str = ""                  # journal tourne chaque nuit ; vide : sortie standard (journal systemd) seulement
     jours: int = 14                    # journaux tournes et images d'alerte ou de fin plus vieux : supprimes (0 : jamais)
 
 
 SECTIONS = {
-    "imprimante": ("hote", "utilisateur", "mot_de_passe", "pause"),
+    "imprimante": ("api", "hote", "utilisateur", "mot_de_passe", "pause"),
     "camera": ("source", "intervalle", "intervalle_repos"),
     "detection": ("modele", "materiel", "seuil", "n", "m"),
     "alerte": ("commande", "dossier"),
     "prusa_connect": ("jeton", "empreinte", "url_connect", "intervalle_connect"),
+    "connect_local": (("url", "url_local"), ("jeton", "jeton_local"), ("imprimante", "imprimante_local"),
+                      ("camera", "camera_local")),
     "journal": ("fichier", "jours"),
 }
 
@@ -54,9 +63,10 @@ def lit(chemin):
     c = Config()
     for section, cles in SECTIONS.items():
         for cle in cles:
+            cle, attribut = cle if isinstance(cle, tuple) else (cle, cle)     # cle du fichier, champ de Config
             if not p.has_option(section, cle):
                 continue
-            defaut = getattr(c, cle)
+            defaut = getattr(c, attribut)
             if isinstance(defaut, bool):
                 val = p.getboolean(section, cle)
             elif isinstance(defaut, int):
@@ -65,14 +75,20 @@ def lit(chemin):
                 val = p.getfloat(section, cle)
             else:
                 val = p.get(section, cle)
-            setattr(c, cle, val)
+            setattr(c, attribut, val)
     base = Path(chemin).resolve().parent             # chemins relatifs au fichier de configuration
     for cle in ("modele", "dossier", "fichier"):
         v = Path(getattr(c, cle))
         if getattr(c, cle) and not v.is_absolute():
             setattr(c, cle, str(base / v))
-    if not c.hote:
+    if c.api not in ("prusalink", "connect"):
+        raise ValueError("[imprimante] api : prusalink ou connect")
+    if c.api == "prusalink" and not c.hote:
         raise ValueError("[imprimante] hote manquant")
+    if (c.api == "connect" or c.camera_local) and not (c.url_local and c.jeton_local):
+        raise ValueError("[connect_local] url et jeton manquants")
+    if c.camera_local and c.jeton:
+        raise ValueError("photos : [prusa_connect] jeton ou [connect_local] camera, pas les deux")
     if c.materiel not in ("npu", "sim", "tflite"):
         raise ValueError("[detection] materiel : npu, sim ou tflite")
     if not 1 <= c.n <= c.m:

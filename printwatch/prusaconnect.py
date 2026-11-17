@@ -20,6 +20,15 @@ def empreinte_machine():
     return hashlib.sha256(("printwatch-" + base).encode()).hexdigest()[:32]
 
 
+def jpeg(image_bgr, largeur_max=1920):
+    """Image en JPEG (qualite 85), reduite a largeur_max ; None si l'encodage echoue."""
+    h, w = image_bgr.shape[:2]
+    if w > largeur_max:
+        image_bgr = cv2.resize(image_bgr, (largeur_max, int(h * largeur_max / w)))
+    ok, jpg = cv2.imencode(".jpg", image_bgr, [cv2.IMWRITE_JPEG_QUALITY, 85])
+    return jpg.tobytes() if ok else None
+
+
 class PrusaConnect:
     def __init__(self, jeton, empreinte="", url=URL, delai=15.0, largeur_max=1920):
         self.jeton = jeton
@@ -30,13 +39,10 @@ class PrusaConnect:
 
     def envoie(self, image_bgr):
         """Envoie une photo ; False (et un avertissement) si Prusa Connect ne l'accepte pas."""
-        h, w = image_bgr.shape[:2]
-        if w > self.largeur_max:
-            image_bgr = cv2.resize(image_bgr, (self.largeur_max, int(h * self.largeur_max / w)))
-        ok, jpg = cv2.imencode(".jpg", image_bgr, [cv2.IMWRITE_JPEG_QUALITY, 85])
-        if not ok:
+        donnees = jpeg(image_bgr, self.largeur_max)
+        if donnees is None:
             return False
-        req = urllib.request.Request(self.url, data=jpg.tobytes(), method="PUT", headers={
+        req = urllib.request.Request(self.url, data=donnees, method="PUT", headers={
             "Content-Type": "image/jpg", "token": self.jeton, "fingerprint": self.empreinte})
         try:
             with urllib.request.urlopen(req, timeout=self.delai) as r:

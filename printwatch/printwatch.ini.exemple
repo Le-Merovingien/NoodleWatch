@@ -1,4 +1,7 @@
 [imprimante]
+# prusalink: the printer directly; connect: local Prusa Connect server (fill in [connect_local];
+# hote, utilisateur and mot_de_passe are then unused)
+api = prusalink
 # printer address on the local network (printer screen: Settings > Network)
 hote = 192.168.1.50
 utilisateur = maker
@@ -35,6 +38,18 @@ dossier = /home/root/printwatch-data/alertes
 # Token: Prusa Connect > printer > Camera > Add another camera. Empty = disabled.
 jeton =
 intervalle_connect = 60
+
+[connect_local]
+# with api = connect: local Prusa Connect server (github.com/prusa3d/prusa-connect) the printer is connected to
+# server address, e.g. http://192.168.1.10:8080
+url =
+# API token with the operate scope: web app > Settings > API credentials > New credential
+jeton =
+# printer id on the server; empty = the server's only printer
+imprimante =
+# option: name of a push camera declared on the server for the printer; it gets the photos instead of
+# [prusa_connect] (then leave its token empty). Empty = no photos
+camera =
 
 [journal]
 # log file, rotated every night at midnight; empty = systemd journal only

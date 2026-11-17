@@ -1,5 +1,5 @@
 [Unit]
-Description=PrintWatch, detection des spaghettis et pause PrusaLink
+Description=PrintWatch, detection des spaghettis et pause de l'impression
 After=network-online.target
 Wants=network-online.target
 

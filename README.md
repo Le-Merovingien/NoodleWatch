@@ -13,11 +13,11 @@ Project page and printable box: [NoodleWatch on Printables](https://www.printabl
 The code and its commands still use the project's working name, `printwatch`.
 
 NoodleWatch watches the print bed through the Coralboard camera. During a print, one image every 5 seconds goes through the "spaghetti" model on the board's NPU. When 3 of the last 5 images show spaghetti, NoodleWatch:
-- pauses the print through PrusaLink;
+- pauses the print through PrusaLink, or through a local Prusa Connect server;
 - saves the annotated image;
 - runs the alert command (buzzer and LEDs of the HAT).
 
-Optionally, the box also works as a Prusa Connect camera: one photo per minute during the print, the alert image, and a final photo to post the make.
+Optionally, the box also works as a Prusa Connect camera, in the cloud or on a local server: one photo per minute during the print, the alert image, and a final photo to post the make.
 
 ## Example detections
 
@@ -31,7 +31,7 @@ Frames from the test set of the "Defect Detection in 3D Printing" dataset (Robof
 
 ## Status
 
-NoodleWatch has not run on a real Coralboard yet, and the box has not been printed yet. Everything was checked on a PC: installed with `requirements.txt`, the whole program runs with Synaptics' NPU simulator (monitoring loop, detection, pause through PrusaLink on a fake printer) and uses about 110 MB of memory, well within the board's 2 GB. What is left to check on the hardware is listed under "To check on the board".
+NoodleWatch has not run on a real Coralboard yet, and the box has not been printed yet. Everything was checked on a PC: installed with `requirements.txt`, the whole program runs with Synaptics' NPU simulator (monitoring loop, detection, pause through PrusaLink or a local Prusa Connect server, each one faked) and uses about 110 MB of memory, well within the board's 2 GB. What is left to check on the hardware is listed under "To check on the board".
 
 ## Installation on the board
 
@@ -45,12 +45,12 @@ NoodleWatch has not run on a real Coralboard yet, and the box has not been print
    adb shell python3 -m venv /home/root/printwatch-venv --system-site-packages
    adb shell /home/root/printwatch-venv/bin/pip install -r /home/root/printwatch/requirements.txt
    ```
-4. **Configuration:** the file must be edited before it goes on the board. On the PC, copy `printwatch/printwatch.ini.exemple` to `printwatch.ini` and fill in the printer's address (`hote`) and the PrusaLink password (`mot_de_passe`), shown on the printer's screen: Settings > Network > PrusaLink. Then copy it to the board:
+4. **Configuration:** the file must be edited before it goes on the board. On the PC, copy `printwatch/printwatch.ini.exemple` to `printwatch.ini` and fill in the printer's address (`hote`) and the PrusaLink password (`mot_de_passe`), shown on the printer's screen: Settings > Network > PrusaLink. With a local Prusa Connect server, fill in `[connect_local]` instead (see "Local Prusa Connect"). Then copy it to the board:
    ```bash
    adb push printwatch.ini /etc/printwatch.ini
    adb shell chmod 600 /etc/printwatch.ini
    ```
-   The file holds the PrusaLink password: `chmod 600` makes it readable by root only.
+   The file holds the PrusaLink password or the Connect token: `chmod 600` makes it readable by root only.
 5. **Automatic start:**
    ```bash
    adb push printwatch/printwatch.service /etc/systemd/system/
@@ -58,6 +58,16 @@ NoodleWatch has not run on a real Coralboard yet, and the box has not been print
    ```
 
 For a first try, set `pause = false` (observation mode): alerts are saved without stopping the print.
+
+## Local Prusa Connect
+
+Instead of PrusaLink, NoodleWatch can go through [Prusa Connect](https://github.com/prusa3d/prusa-connect), the server Prusa released to run at home (public beta 0.1, November 2026). Set `api = connect` in `[imprimante]`, then fill in `[connect_local]`:
+- `url`: the server's address, for example `http://192.168.1.10:8080`;
+- `jeton`: an API token with the `operate` scope (web app: Settings > API credentials > New credential);
+- `imprimante`: the printer's id on the server; leave it empty if the server knows only one printer;
+- `camera` (optional): the name of a camera of type `push` declared on the server for this printer. NoodleWatch sends it its photos (one per minute during the print, the alert image, the final photo), in place of the cloud Prusa Connect camera.
+
+The printer must be connected to that server (`prusa_printer_settings.ini` on a USB stick, see the server's documentation), which takes it off the cloud Prusa Connect. PrusaLink keeps working beside it. Tested against a fake server written from the source code of version 0.1.0-beta.1, not against a real server yet: the API of the beta may still change.
 
 ## Prusa Buddy3D camera
 
