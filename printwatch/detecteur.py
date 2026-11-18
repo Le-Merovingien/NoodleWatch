@@ -50,7 +50,7 @@ def decode(sortie, seuil, iou=0.45):
 
 
 class Detecteur:
-    def __init__(self, dossier, materiel="npu", seuil=0.5):
+    def __init__(self, dossier, materiel="npu", seuil=0.18):
         d = Path(dossier)
         self.meta = json.loads((d / "modele.json").read_text())
         self.taille = self.meta["taille"]

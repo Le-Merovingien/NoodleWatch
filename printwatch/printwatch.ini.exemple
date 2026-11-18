@@ -14,7 +14,7 @@ pause = true
 # board camera: Synaptics' GStreamer pipeline (the sensor exposure is set at start-up);
 # if the camera is not /dev/video0: v4l2-ctl --list-devices, then change device=
 # Buddy3D camera: rtsp://camera-IP/live (RTSP enabled in the Prusa app),
-# 720p recommended (1080p takes most of the board's CPU to decode);
+# 720p recommended (1080p may take a lot of the board's CPU to decode, not measured yet);
 # a video file or an image folder for a test
 source = v4l2src device=/dev/video0 ! video/x-raw ! videoconvert ! video/x-raw,format=BGR ! appsink drop=true max-buffers=1
 intervalle = 5
