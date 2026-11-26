@@ -75,9 +75,20 @@ NoodleWatch can also use the Buddy3D camera inside the CORE One instead of the b
 1. In the Prusa app, enable RTSP for the camera. The stream is then available on the local network only, unencrypted.
 2. In `printwatch.ini`, set `source = rtsp://<camera IP>/live`.
 
-The stream is read continuously in the background, so each analysis uses the latest image, and NoodleWatch reconnects on its own if the stream drops. With the Buddy3D, nothing needs to be mounted on the door: the program can run on the board anywhere on the network, or on a Linux PC with `materiel = tflite` (Python packages `numpy`, `opencv-python` and `ai-edge-litert`), with `python -m printwatch printwatch.ini`. On a PC, also point `dossier` (`[alerte]`) and `fichier` (`[journal]`) to places you can write to: the example paths are the board's.
+The stream is read continuously in the background, so each analysis uses the latest image, and NoodleWatch reconnects on its own if the stream drops. With the Buddy3D, nothing needs to be mounted on the door: the program can run on the board anywhere on the network, or on a PC with `materiel = tflite` (see "Running on a PC with uv"). On a PC, also point `dossier` (`[alerte]`) and `fichier` (`[journal]`) to places you can write to: the example paths are the board's.
 
 Not yet tested with a real Buddy3D camera.
+
+## Running on a PC with uv
+
+On a PC (Linux, macOS or Windows), [uv](https://docs.astral.sh/uv/) installs Python and the packages from `pyproject.toml` and `uv.lock`. The `pc` extra brings `opencv-python` and `ai-edge-litert`, for `materiel = tflite`:
+```bash
+cp printwatch/printwatch.ini.exemple printwatch.ini      # then set materiel = tflite, dossier and fichier
+uv run --extra pc printwatch printwatch.ini
+```
+Relative paths in `printwatch.ini` are relative to the file itself, for example `dossier = printwatch-data/alertes`. `printwatch.ini` and `printwatch-data/` are in `.gitignore`, so the password stays out of git.
+
+The `npu` extra brings `torq-runtime` (x86-64 or aarch64 Linux, Python 3.12 or later), for `materiel = sim`: `uv run --extra pc --extra npu printwatch printwatch.ini`. On the board, keep the installation above: `requirements.txt` in a venv that keeps the image's OpenCV.
 
 ## To check on the board
 

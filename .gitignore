@@ -13,3 +13,6 @@ modeles/*/npu/
 .idea/
 !printwatch/modele/*.tflite
 !printwatch/modele/*.vmfb
+.venv/
+printwatch.ini
+printwatch-data/
